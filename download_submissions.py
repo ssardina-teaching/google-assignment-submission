@@ -90,7 +90,7 @@ def get_id_by_absolute_path(path):
     return final_id
 
 
-def download_all_submissions(destination, submission_folder_id, overwrite):
+def download_all_submissions(destination, submission_folder_id, overwrite, report_skip):
     #  some initial useful definitions (to be used later)
     email_pattern = re.compile(r'(.+)@(?:student\.)?rmit\.edu\.(?:au|vn)')
     filename_pattern = re.compile(r'(.+)_(.+).zip')
@@ -121,7 +121,7 @@ def download_all_submissions(destination, submission_folder_id, overwrite):
         else:
             print('Very strange '+email+' is not a a valid email id. Skipping submission...')
 
-
+    print("Number of unique submissions identified: %d \n" % len(unique_submissions))
     # Next, we download everything in unique_submissions form Gdrive
     for i, student_id in enumerate(unique_submissions):
         # get submission id and time
@@ -150,7 +150,7 @@ def download_all_submissions(destination, submission_folder_id, overwrite):
                 gdrive_file.GetContentFile(destination_file_path)
             else:
                 print("Submission by %s is not a .zip file - https://drive.google.com/open?id=%s" % (student_id, unique_submissions[student_id].gdrive_id))
-        else:
+        elif report_skip:
             print("Skipping submission for %s (%d/%d) - submission in folder already (use --overwrite option to replace)" % (student_id, i+1, len(unique_submissions)))
 
 
@@ -191,6 +191,11 @@ if __name__ == '__main__':
         help='Directory where the submissions should be downloaded.'
     )
     parser.add_argument(
+        '--report-skip',
+        action='store_true',
+        help='If given, skipped files will be reported too; otherwise will be ignored.'
+    )
+    parser.add_argument(
         '--overwrite',
         action='store_true',
         help='If given, existing downloaded submissions will be overwritten. If not, they will be skipped.'
@@ -218,4 +223,4 @@ if __name__ == '__main__':
     else:
         gdrive_id = get_id_by_absolute_path(args.gdrive_path)
 
-    download_all_submissions(args.submissions_dir, gdrive_id, args.overwrite)
+    download_all_submissions(args.submissions_dir, gdrive_id, args.overwrite, args.report_skip)
