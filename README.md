@@ -1,10 +1,9 @@
-Sebastian Sardina @ 2017
+First developed by Sebastian Sardina and Marco Tamassia for COSC1125/1127 Artificial Intelligence 2017.
+
+Contact: ssardina@gmail.com
 
 
-This is a system to handle assignment submissions via Google Forms.
-
-
-There are 2 mains scripts:
+This is a system to handle assignment submissions via Google Forms. There are 2 mains scripts:
 
 - download_submissions.py: 
     download the latests submissions from Google Drive and set the student number as file name
@@ -62,10 +61,3 @@ PRODUCE DIRECTORIES
 This will produce one directory per student and unpack the zip there:
 
     python expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
-
-
-
-
-
-
-
