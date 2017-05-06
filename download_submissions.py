@@ -187,7 +187,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--submissions-dir',
         type=str,
-        default='submissions',
+        default='./',
         help='Directory where the submissions should be downloaded.'
     )
     parser.add_argument(
