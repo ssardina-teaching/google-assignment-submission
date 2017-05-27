@@ -90,12 +90,14 @@ def get_id_by_absolute_path(path):
     return final_id
 
 
-def download_all_submissions(destination, submission_folder_id, overwrite, report_skip):
+def download_all_submissions(destination, submission_folder_id, overwrite, report_skip, submission_ext):
     #  some initial useful definitions (to be used later)
     email_pattern = re.compile(r'(.+)@(?:student\.)?rmit\.edu\.(?:au|vn)')
-    filename_pattern = re.compile(r'(.+)_(.+).zip')
+    filename_pattern = re.compile(r'(.+)_(.+).' + submission_ext)
     melbourne = timezone('Australia/Melbourne')
     submission_entry = namedtuple('submission_entry', ['timestamp', 'gdrive_id'])
+
+
 
     # if the destination directory does not exist, then create it
     if not os.path.exists(destination):
@@ -129,7 +131,7 @@ def download_all_submissions(destination, submission_folder_id, overwrite, repor
 
         # check for existing  older submission files from the same student and remove them if any
         # submission time is included in the file name
-        for existing_file in glob.glob(os.path.join(destination, '%s_*.zip' % student_id)):
+        for existing_file in glob.glob(os.path.join(destination, '%s_*.%s' % (student_id, submission_ext))):
             match = re.match(filename_pattern, existing_file)
             if match:
                 try:
@@ -141,11 +143,11 @@ def download_all_submissions(destination, submission_folder_id, overwrite, repor
                     print('[WARNING] Cannot parse date of file %s' % existing_file)
 
         # define name of output target file (include student number id + timestamp of file obtained)
-        destination_file_path = os.path.join(destination, '%s_%s.zip' % (student_id, latest_submission_timestamp.isoformat()))
+        destination_file_path = os.path.join(destination, '%s_%s.%s' % (student_id, latest_submission_timestamp.isoformat(), submission_ext))
         # download it if not there or needs to be overwritten
         if not os.path.exists(destination_file_path) or overwrite:
             gdrive_file = drive.CreateFile({'id': unique_submissions[student_id].gdrive_id})
-            if gdrive_file['title'].endswith('.zip'):
+            if gdrive_file['title'].endswith('.' + submission_ext):
                 print("Downloading submission for %s (%d/%d) - https://drive.google.com/open?id=%s" % (student_id, i+1, len(unique_submissions), unique_submissions[student_id].gdrive_id))
                 gdrive_file.GetContentFile(destination_file_path)
             else:
@@ -196,6 +198,13 @@ if __name__ == '__main__':
         help='Directory where the submissions should be downloaded.'
     )
     parser.add_argument(
+        '--submission-ext',
+        type=str,
+        required=False,
+        default='zip',
+        help='Extension of submission to gather, zip or pdf.'
+    )
+    parser.add_argument(
         '--report-skip',
         action='store_true',
         help='If given, skipped files will be reported too; otherwise will be ignored.'
@@ -228,4 +237,4 @@ if __name__ == '__main__':
     else:
         gdrive_id = get_id_by_absolute_path(args.gdrive_path)
 
-    download_all_submissions(args.submissions_dir, gdrive_id, args.overwrite, args.report_skip)
+    download_all_submissions(args.submissions_dir, gdrive_id, args.overwrite, args.report_skip, args.submission_ext)
