@@ -184,6 +184,11 @@ if __name__ == '__main__':
         action='store_true',
         help='If given, existing credentials will be deleted.'
     )
+    parser.add_argument( #TODO: needs to complete this capability
+        '--dir-credentials',
+        default='./',
+        help='Path directory where the credential file client_secrets.json is located (not working yet).'
+    )
     parser.add_argument(
         '--submissions-dir',
         type=str,
