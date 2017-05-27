@@ -29,14 +29,14 @@ if __name__ == '__main__':
     parser.add_argument(
         '--zip-dir',
         type=str,
-        required=True,
+        default='./',
         help='Directory where zip files are located.'
     )
     parser.add_argument(
         '--output-dir',
         type=str,
         required=False,
-        default='submissions',
+        default='./',
         help='Directory where student directories will be placed.'
     )
     args = parser.parse_args()
