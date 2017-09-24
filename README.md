@@ -29,7 +29,6 @@ To use the script, install dependencies by executing:
 pip install -r requirements.txt
 ```
 
-
 #### 1 - PREPARE GOOGLE FORMS FOR SUBMISSIONS ####
 
 Basically you need a way to store submissions in Google Drive. This can be done by either:
