@@ -61,3 +61,13 @@ PRODUCE DIRECTORIES
 This will produce one directory per student and unpack the zip there:
 
     python expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
+
+
+
+===============================
+REQUIREMENTS
+===============================
+Run the following command to install dependencies
+```
+pip install -r requirements.txt
+```

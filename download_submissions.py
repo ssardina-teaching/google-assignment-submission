@@ -16,26 +16,10 @@ from collections import defaultdict, namedtuple
 from pytz import timezone
 import glob
 import logging
-
-
-try:
-    import iso8601
-except:
-    print('Iso8601 is not installed. Please, run `pip install iso8601`')
-    sys.exit(1)
-
-try:
-    import pandas as pd
-except:
-    print('Pandas is not installed. Please, run `pip install pandas`')
-    sys.exit(1)
-
-try:
-    from pydrive.auth import GoogleAuth
-    from pydrive.drive import GoogleDrive
-except:
-    print('PyDrive is not installed. Please, run `pip install pydrive`')
-    sys.exit(1)
+import iso8601
+# import pandas as pd
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 
 
 def get_path_pieces_reversed(path):
