@@ -17,7 +17,6 @@ from pytz import timezone
 import glob
 import logging
 import iso8601
-# import pandas as pd
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
@@ -199,13 +198,14 @@ if __name__ == '__main__':
         help='If given, existing downloaded submissions will be overwritten. If not, they will be skipped.'
     )
 
-    args = parser.parse_args()
+    args = vars(parser.parse_args())
+    print(args)
 
-    if args.gdrive_id is None and args.gdrive_path is None:
+    if args['gdrive_id'] is None and args.gdrive_path is None:
         logging.error("at least one of --gdrive-id --gdrive-path required")
         sys,exit(1)
 
-    if args.reset_credentials and os.path.exists('credentials.json'):
+    if args['reset_credentials'] and os.path.exists('credentials.json'):
         os.remove('credentials.json')
 
     gauth = GoogleAuth()
@@ -213,12 +213,13 @@ if __name__ == '__main__':
 
     drive = GoogleDrive(gauth) # Create GoogleDrive instance with authenticated GoogleAuth instance
 
-    if not args.gdrive_path is None and args.gdrive_path.endswith('/'):
-        args.gdrive_path = args.gdrive_path[:-1]
+    if not args['gdrive_path'] is None and args['gdrive_path'].endswith('/'):
+        args['gdrive_path'] = args['gdrive_path'][:-1]
 
-    if not args.gdrive_id is None:
-        gdrive_id = args.gdrive_id
+    if not args['gdrive_id'] is None:
+        gdrive_id = args['gdrive_id']
     else:
-        gdrive_id = get_id_by_absolute_path(args.gdrive_path)
+        gdrive_id = get_id_by_absolute_path(args['gdrive_path'])
 
-    download_all_submissions(args.submissions_dir, gdrive_id, args.overwrite, args.report_skip, args.submission_ext)
+    download_all_submissions(args['submissions_dir'], gdrive_id, args['overwrite'], args['report_skip'],
+                             args['submission_ext'])
