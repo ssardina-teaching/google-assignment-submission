@@ -5,23 +5,23 @@ First developed by A/Prof. Sebastian Sardina and Marco Tamassia for RMIT Univers
 Contact: ssardina@gmail.com
 
 
-## DESCRIPTION ##
+## DESCRIPTION
 
 This Python system handles assignment submissions stored in Google Drive, for example via Google Forms. 
 When the submissions are in Google Drive, the script is able to retrieve their latest version per student automatically.
 
 There are 2 mains scripts:
 
-- download_submissions.py: 
+- `download_submissions.py`: 
     download the latest submissions from Google Drive and set the student number and timestamp as file name
-- expand_zip_files.py:
+- `expand_zip_files.py`:
     expands zip files into directories per student
 
 
 The zip files or directories can then be used for automarking, plagarism detection (e.g., using MOSS), etc.
 
 
-## INSTRUCTIONS ##
+## INSTRUCTIONS 
 
 To use the script, install dependencies by executing:
 
@@ -31,16 +31,16 @@ pip install -r requirements.txt
 
 #### 1 - PREPARE GOOGLE FORMS FOR SUBMISSIONS ####
 
-Basically you need a way to store submissions in Google Drive. This can be done by either:
-- A Google From with upload capabilities (available only with premum license; RMIT has one)
-    - An RMIT template example can seen here: http://tinyurl.com/m2ply3l
-        - Send me an email if you want a copy of that form.
-- Use the following Google Scripts system to enhance a form to upload files to Google Drive:
-        - https://www.labnol.org/internet/receive-files-in-google-drive/19697/
-        - https://www.labnol.org/internet/file-upload-google-forms/29170/
+Basically, you need a way to store submissions in Google Drive. This can be done by either:
 
-Remember to set it to collect University email addresses IDs or Gmail address. 
-Otherwise, there is no way to confidently associate a submission with an id.
+- A Google From with upload capabilities.
+    - An RMIT template example can seen here: http://tinyurl.com/m2ply3l
+    - Send me an email if you want a copy of that form.
+- Use the following Google Scripts system to enhance a form to upload files to Google Drive:
+    - https://www.labnol.org/internet/receive-files-in-google-drive/19697/
+    - https://www.labnol.org/internet/file-upload-google-forms/29170/
+
+Remember to set it to collect University email addresses IDs or Gmail address.  Otherwise, there is no way to confidently associate a submission with an id.
 
 One field in the submission that I use handles HONOR CODE, taken from Khan Academy:
 
@@ -50,7 +50,7 @@ This declaration is the same as the one in Khan Academy.  We trust you all to su
 risking to go that path, as the consequences are serious for students. The project will not be marked unless this question is answered correctly and exactly with "Yes" as required. "
 ```
 
-#### 2 - RUN SCRIPT: EXAMPLES #### 
+#### 2 - RUN SCRIPT: EXAMPLES 
 
 - Download all latest submissions directory by using the path in Google Drive (from user root):
     
