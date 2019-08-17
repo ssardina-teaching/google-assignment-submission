@@ -1,10 +1,7 @@
-import shutil
 import argparse
 import os
 import sys
 import zipfile
-import commands
-import traceback
 import re
 import logging
 
