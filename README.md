@@ -4,8 +4,7 @@ First developed by A/Prof. Sebastian Sardina and Marco Tamassia for RMIT Univers
 
 Contact: ssardina@gmail.com
 
-
-## DESCRIPTION
+## Description
 
 This Python system handles assignment submissions stored in Google Drive, for example via Google Forms. 
 When the submissions are in Google Drive, the script is able to retrieve their latest version per student automatically.
@@ -20,16 +19,16 @@ There are 2 mains scripts:
 
 The zip files or directories can then be used for automarking, plagarism detection (e.g., using MOSS), etc.
 
+### Requirements
 
-## INSTRUCTIONS 
-
-To use the script, install dependencies by executing:
+Works with Python 3. Install dependencies by executing:
 
 ```
 pip install -r requirements.txt
 ```
 
-#### 1 - PREPARE GOOGLE FORMS FOR SUBMISSIONS ####
+
+## Prepare Google Forms for submissions
 
 Basically, you need a way to store submissions in Google Drive. This can be done by either:
 
@@ -50,12 +49,12 @@ This declaration is the same as the one in Khan Academy.  We trust you all to su
 risking to go that path, as the consequences are serious for students. The project will not be marked unless this question is answered correctly and exactly with "Yes" as required. "
 ```
 
-#### 2 - RUN SCRIPT: EXAMPLES 
+## Running the script
 
-- Download all latest submissions directory by using the path in Google Drive (from user root):
+- Download all latest submissions directory by using the path in Google Drive by specifying the folder from the user root folder:
     
     ```
-    python download_submissions.py --gdrive-path Courses/Artificial\ Intelligence/2017/assessments/submissions/AI17\ Submission\ \
+    python3 download_submissions.py --gdrive-path Courses/Artificial\ Intelligence/2017/assessments/submissions/AI17\ Submission\ \
             -\ Project\ 1\:\ Search\ in\ Pacman\ \(File\ responses\)/Your\ submission\ package\ \(File\ responses\) \
             --submissions-dir submissions-zip/
     ```
@@ -66,6 +65,10 @@ risking to go that path, as the consequences are serious for students. The proje
     python download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVlGUW01N2JONHpDT2JSUmtpNzA0bFdBWmhFbVU \
         --submissions-dir submissions-zip/
     ```
+
+The browser will open to authorize the execution of the script. Make sure you log into the RMIT account.
+
+## Building dirs from zip files
     
 - With all .zip files downloaded, we can generate one directory per student and unpack the zip there:
 
