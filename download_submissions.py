@@ -80,17 +80,16 @@ def download_all_submissions(destination, submission_folder_id, overwrite, repor
     melbourne = timezone('Australia/Melbourne')
     submission_entry = namedtuple('submission_entry', ['timestamp', 'gdrive_id'])
 
-
-
     # if the destination directory does not exist, then create it
     if not os.path.exists(destination):
         os.makedirs(destination)
 
     # iterate thought all submitted files in the gdrive and extract the latest submission for each student
     # submission_folder_id = get_id_by_absolute_path(full_path)
-    files_in_submission_folder = get_children_by_id(submission_folder_id) # list of files in submission folder
-    unique_submissions = defaultdict(submission_entry) # we will build a collection of the latest student submissions here
-    for f in files_in_submission_folder: # iterate through all the submitted files
+    files_in_submission_folder = get_children_by_id(submission_folder_id)  # list of files in submission folder
+    unique_submissions = defaultdict(
+        submission_entry)  # we will build a collection of the latest student submissions here
+    for f in files_in_submission_folder:  # iterate through all the submitted files
         # get email and timestamp from google drive data
         email = f['lastModifyingUser']['emailAddress']
         submission_timestamp = iso8601.parse_date(f['createdDate']).astimezone(melbourne)
@@ -104,7 +103,7 @@ def download_all_submissions(destination, submission_folder_id, overwrite, repor
             if student_id not in unique_submissions or unique_submissions[student_id].timestamp < submission_timestamp:
                 unique_submissions[student_id] = submission_entry(timestamp=submission_timestamp, gdrive_id=f['id'])
         else:
-            print('Very strange '+email+' is not a a valid email id. Skipping submission...')
+            print('Very strange ' + email + ' is not a a valid email id. Skipping submission...')
 
     print("Number of unique submissions identified: %d \n" % len(unique_submissions))
     # Next, we download everything in unique_submissions form Gdrive
@@ -126,23 +125,25 @@ def download_all_submissions(destination, submission_folder_id, overwrite, repor
                     print('[WARNING] Cannot parse date of file %s' % existing_file)
 
         # define name of output target file (include student number id + timestamp of file obtained)
-        destination_file_path = os.path.join(destination, '%s_%s.%s' % (student_id, latest_submission_timestamp.isoformat(), submission_ext))
+        destination_file_path = os.path.join(destination, '%s_%s.%s' % (
+        student_id, latest_submission_timestamp.isoformat(), submission_ext))
         # download it if not there or needs to be overwritten
         if not os.path.exists(destination_file_path) or overwrite:
             gdrive_file = drive.CreateFile({'id': unique_submissions[student_id].gdrive_id})
             if gdrive_file['title'].endswith('.' + submission_ext):
-                print("Downloading submission for %s (%d/%d) - https://drive.google.com/open?id=%s" % (student_id, i+1, len(unique_submissions), unique_submissions[student_id].gdrive_id))
+                print("Downloading submission for %s (%d/%d) - https://drive.google.com/open?id=%s" % (
+                    student_id, i + 1, len(unique_submissions), unique_submissions[student_id].gdrive_id))
                 gdrive_file.GetContentFile(destination_file_path)
             else:
-                print("Submission by %s is not a .zip file - https://drive.google.com/open?id=%s" % (student_id, unique_submissions[student_id].gdrive_id))
+                print("Submission by %s is not a .zip file - https://drive.google.com/open?id=%s" % (
+                    student_id, unique_submissions[student_id].gdrive_id))
         elif report_skip:
-            print("Skipping submission for %s (%d/%d) - submission in folder already (use --overwrite option to replace)" % (student_id, i+1, len(unique_submissions)))
-
-
+            print(
+                "Skipping submission for %s (%d/%d) - submission in folder already (use --overwrite option to replace)" % (
+                    student_id, i + 1, len(unique_submissions)))
 
 
 if __name__ == '__main__':
-
 
     parser = argparse.ArgumentParser(
         description='This script downloads all submission zip files in a directory in Google Drive.\n'
@@ -150,7 +151,7 @@ if __name__ == '__main__':
                     'be prompted to login. Credentials will be saved in the file "credentials.json".\n'
                     '\n\n'
                     "Example usage: python download_submissions.py --gdrive-path 'assessments/submissions/AI17 Submission - Project 0: Python Warmup (File responses)/Your submission package (File responses)' --csv-path 'p0-responses.csv'",
-        formatter_class = argparse.RawTextHelpFormatter
+        formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument(
         '--gdrive-id',
@@ -169,7 +170,7 @@ if __name__ == '__main__':
         action='store_true',
         help='If given, existing credentials will be deleted.'
     )
-    parser.add_argument( #TODO: needs to complete this capability
+    parser.add_argument(  # TODO: needs to complete this capability
         '--dir-credentials',
         default='./',
         help='Path directory where the credential file client_secrets.json is located (not working yet).'
@@ -203,15 +204,15 @@ if __name__ == '__main__':
 
     if args['gdrive_id'] is None and args.gdrive_path is None:
         logging.error("at least one of --gdrive-id --gdrive-path required")
-        sys,exit(1)
+        sys, exit(1)
 
     if args['reset_credentials'] and os.path.exists('credentials.json'):
         os.remove('credentials.json')
 
     gauth = GoogleAuth()
-    gauth.LocalWebserverAuth() # Creates local web-server and auto handles authentication.
+    gauth.LocalWebserverAuth()  # Creates local web-server and auto handles authentication.
 
-    drive = GoogleDrive(gauth) # Create GoogleDrive instance with authenticated GoogleAuth instance
+    drive = GoogleDrive(gauth)  # Create GoogleDrive instance with authenticated GoogleAuth instance
 
     if not args['gdrive_path'] is None and args['gdrive_path'].endswith('/'):
         args['gdrive_path'] = args['gdrive_path'][:-1]
