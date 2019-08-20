@@ -53,27 +53,29 @@ risking to go that path, as the consequences are serious for students. The proje
 
 - Download all latest submissions directory by using the path in Google Drive by specifying the folder from the user root folder:
     
-    ```
-    python3 download_submissions.py --gdrive-path Courses/Artificial\ Intelligence/2017/assessments/submissions/AI17\ Submission\ \
-            -\ Project\ 1\:\ Search\ in\ Pacman\ \(File\ responses\)/Your\ submission\ package\ \(File\ responses\) \
-            --submissions-dir submissions-zip/
-    ```
+```
+python3 download_submissions.py --gdrive-path Courses/Artificial\ Intelligence/2017/assessments/submissions/AI17\ Submission\ \
+        -\ Project\ 1\:\ Search\ in\ Pacman\ \(File\ responses\)/Your\ submission\ package\ \(File\ responses\) \
+        --submissions-dir submissions-zip/
+```
        
 - Same but using the Google Folder ID (easier, less error-prone):
 
-    ```
-    python download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVlGUW01N2JONHpDT2JSUmtpNzA0bFdBWmhFbVU \
-        --submissions-dir submissions-zip/
-    ```
+```
+python3 download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVlGUW01N2JONHpDT2JSUmtpNzA0bFdBWmhFbVU \
+    --submissions-dir submissions-zip/
+```
+  
+- By default, skipped submissions that already exist are not reported, use `--report-skip` for that.
 
 The browser will open to authorize the execution of the script. Make sure you log into the RMIT account.
 
 ## Building dirs from zip files
     
-- With all .zip files downloaded, we can generate one directory per student and unpack the zip there:
+Once all .zip files have been downloaded, we can generate one directory per student and unpack the zip into it follows:
 
-    ```
-    python expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
-    ```
+```
+python3 expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
+```
 
 
