@@ -36,6 +36,12 @@ if __name__ == '__main__':
         default='./',
         help='Directory where student directories will be placed.'
     )
+    parser.add_argument(
+        '--overwrite',
+        action='store_true',
+        default=False,
+        help='Overwrite destination if exists.'
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.zip_dir) or not os.path.isdir(args.zip_dir):
@@ -53,14 +59,17 @@ if __name__ == '__main__':
             student_dir = match.group(1)
             full_f = os.path.join(args.zip_dir, f)
             full_student_dir = os.path.join(args.output_dir, student_dir)
-            if not os.path.exists(full_student_dir):
-                logging.info('Expanding submission %s in %s ' % (f,full_student_dir))
-                os.mkdir(full_student_dir)
+            if not os.path.exists(full_student_dir) or args.overwrite:
+                if not os.path.exists(full_student_dir):
+                    os.mkdir(full_student_dir)
                 student_zip_file = zipfile.ZipFile(full_f)
                 try:
                     student_zip_file.extractall(full_student_dir)
-                except:
-                    logging.error('Cannot expand file %s' % f)
+                    logging.info('Submission %s expanded in %s ' % (f, full_student_dir))
+                except Exception as e:
+                    logging.error('Unable to expand file {}: {} ({})'.format(f, type(e), e))
+                    os.rmdir(full_student_dir)
+
         except:
             logging.warning("File %s cannot be processed - does not match pattern - no dir created for it!" % f)
 

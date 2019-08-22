@@ -78,4 +78,10 @@ Once all .zip files have been downloaded, we can generate one directory per stud
 python3 expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
 ```
 
+## Errors in unzipping submissions
+
+For some submissions, you may see errors as follows:
+
+Wed, 21 Aug 2019 20:24:18 ERROR    Cannot expand file s3627828_2019-08-18T20:35:03.949000+10:00.zip: <class 'zipfile.BadZipFile'> (Bad magic number for file header)
+
 
