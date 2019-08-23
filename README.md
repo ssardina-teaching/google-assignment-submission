@@ -78,6 +78,20 @@ Once all .zip files have been downloaded, we can generate one directory per stud
 python3 expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
 ```
 
+Unfortunately, Python unzip fails with some cases that have the wrong magic number, but they do work using unzip. Also, if the zip file has folders, they will be re-created and the automarker won't find the files.
+
+So, to get around both issues, I prefer to use the following shell command:
+
+    for i in s*.zip; do unzip -j -o "$i" -d `sed "s/_.*//" <<< $i` ; done
+    
+This will create on directory per student and unpack all without re-creating the zip structure. So, if a student included the files in folders, they will be flatten out.
+
+If you want to move all resulting directories somewhere else:
+
+    find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
+
+
+
 ## Errors in unzipping submissions
 
 For some submissions, you may see errors as follows:
