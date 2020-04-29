@@ -78,10 +78,10 @@ to directory dir_destination.
     If overwrite is true just replace ANY local copy. 
     If report_skip is true, do not report submissions that are skipped (because they already exist).
 """
-def download_all_submissions(dir_destination, gdrive_id, overwrite, report_skip, sub_ext):
+def download_all_submissions(dir_destination, gdrive_id, overwrite, report_skip, sub_ext, check_extension):
     #  some initial useful definitions (to be used later)
     email_pattern = re.compile(r'(.+)@(?:student\.)?rmit\.edu\.(?:au|vn)')
-    filename_pattern = re.compile(r'(.+)_(.+).' + sub_ext)
+    filename_pattern = re.compile(r'(.+)_(.+).' + sub_ext)   # s3600563_2020-04-29T08:12:23.723000+10:00.xxx
     melbourne = timezone('Australia/Melbourne')
     submission_entry = namedtuple('submission_entry', ['timestamp', 'gdrive_id'])
 
@@ -108,16 +108,23 @@ def download_all_submissions(dir_destination, gdrive_id, overwrite, report_skip,
         else:
             print('Very strange ' + email + ' is not a a valid email id. Skipping submission...')
 
-    print("Number of unique submissions identified (many may already exist in local dir): %d \n" % len(unique_submissions))
+    print("Number of unique submissions identified (many may already exist in local dir): %d \n" % len(
+        unique_submissions))
+    # Each entry in unique_submissions is of the form:
+    #     'sebastian.sardina': submission_entry(timestamp=datetime.datetime(2020, 4, 28, 11, 1, 31, 994000,
+    #           tzinfo= < DstTzInfo 'Australia/Melbourne' AEST + 10: 00:00 STD >),
+    #           gdrive_id = '1rVGNfMA3Ja-zdYCJnpZqaXNtGeHj6Ia4')})
 
     # Next, we download everything in unique_submissions form Gdrive
-    for i, student_id in enumerate(unique_submissions):
-        # get submission id and time
+    for i, student_id in enumerate(unique_submissions): # i is 0,1,2,3... and student_id is "s3844647"
+        # get submission timestamp and Google Drive id to the document
         latest_submission_timestamp, gdrive_id = unique_submissions[student_id]
 
-        # check for existing  older submission files from the same student and remove them if any
+        # check for existing older submission files from the same student and remove them if any
         # submission time is included in the file name
         for existing_file in glob.glob(os.path.join(dir_destination, '%s_*.%s' % (student_id, sub_ext))):
+            print(existing_file)
+            exit(0)
             match = re.match(filename_pattern, existing_file)
             if match:
                 try:
@@ -134,13 +141,13 @@ def download_all_submissions(dir_destination, gdrive_id, overwrite, report_skip,
         # download it if not there or needs to be overwritten
         if not os.path.exists(destination_file_path) or overwrite:
             gdrive_file = drive.CreateFile({'id': unique_submissions[student_id].gdrive_id})
-            if gdrive_file['title'].endswith('.' + sub_ext):
+            if not check_extension or gdrive_file['title'].endswith('.' + sub_ext):
                 print("Downloading submission for %s (%d/%d) - https://drive.google.com/open?id=%s" % (
                     student_id, i + 1, len(unique_submissions), unique_submissions[student_id].gdrive_id))
                 gdrive_file.GetContentFile(destination_file_path)
             else:
-                print("Submission by %s is not a .zip file - https://drive.google.com/open?id=%s" % (
-                    student_id, unique_submissions[student_id].gdrive_id))
+                print("Submission by %s does not have %s extension - https://drive.google.com/open?id=%s" % (
+                    student_id, sub_ext, unique_submissions[student_id].gdrive_id))
         elif report_skip:
             print("Skipping submission for {:s} ({:d}/{:d}) - submission in folder already (use --overwrite option to replace)".format(
                     student_id, i + 1, len(unique_submissions)))
@@ -181,20 +188,25 @@ if __name__ == '__main__':
     parser.add_argument(  # TODO: needs to complete this capability
         '--dir-credentials',
         default='./',
-        help='Path directory where the credential file client_secrets.json is located (not working yet).'
+        help='Path directory where the credential file client_secrets.json is located (not working yet) (default: %(default)s).'
     )
     parser.add_argument(
         '--submissions-dir',
         type=str,
         default='./',
-        help='Directory where the submissions should be downloaded.'
+        help='Directory where the submissions should be downloaded (default: %(default)s).'
     )
     parser.add_argument(
-        '--submission-ext',
+        '--submission-extension',
         type=str,
         required=False,
         default='zip',
-        help='Extension of submission to gather, zip or pdf.'
+        help='Extension of submission to gather (e.g., zip or pdf); otherwise any (default: %(default)s).'
+    )
+    parser.add_argument(
+        '--check-extension',
+        action='store_true',
+        help='If given, submissions will be checked for the correct extension and skipped if incorrect.'
     )
     parser.add_argument(
         '--report-skip',
@@ -207,6 +219,7 @@ if __name__ == '__main__':
         help='If given, existing downloaded submissions will be overwritten. If not, they will be skipped.'
     )
 
+
     args = vars(parser.parse_args())
     print(args)
 
@@ -217,8 +230,18 @@ if __name__ == '__main__':
     if args['reset_credentials'] and os.path.exists('credentials.json'):
         os.remove('credentials.json')
 
+    # gauth = GoogleAuth()
+    # gauth.LocalWebserverAuth()  # Creates local web-server and auto handles authentication.
+
     gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()  # Creates local web-server and auto handles authentication.
+    gauth.LoadCredentialsFile("credentials.txt")
+    if gauth.credentials is None:
+        gauth.LocalWebserverAuth()  # Creates local web-server and auto handles authentication.
+    elif gauth.access_token_expired:
+        gauth.Refresh()
+    else:
+        gauth.Authorize()
+    gauth.SaveCredentialsFile("credentials.txt")
 
     drive = GoogleDrive(gauth)  # Create GoogleDrive instance with authenticated GoogleAuth instance
 
@@ -232,4 +255,4 @@ if __name__ == '__main__':
         gdrive_id = args['gdrive_id']
 
     download_all_submissions(args['submissions_dir'], gdrive_id, args['overwrite'], args['report_skip'],
-                             args['submission_ext'])
+                             args['submission_extension'], args['check_extension'])
