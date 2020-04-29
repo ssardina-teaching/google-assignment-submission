@@ -68,7 +68,7 @@ python3 download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVl
   
 - By default, skipped submissions that already exist are not reported, use `--report-skip` for that.
 
-The browser will open to authorize the execution of the script. Make sure you log into the RMIT account.
+The first time, the browser will open to authorize the execution of the script. Make sure you log into the RMIT account. After that, a `credentials.txt` file will be saved that will be used next time for authentication.
 
 ## Building dirs from zip files
     
