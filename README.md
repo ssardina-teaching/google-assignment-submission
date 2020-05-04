@@ -53,15 +53,14 @@ risking to go that path, as the consequences are serious for students. The proje
 
 - Download all latest submissions directory by using the path in Google Drive by specifying the folder from the user root folder:
     
-```
-python3 download_submissions.py --gdrive-path Courses/Artificial\ Intelligence/2017/assessments/submissions/AI17\ Submission\ \
-        -\ Project\ 1\:\ Search\ in\ Pacman\ \(File\ responses\)/Your\ submission\ package\ \(File\ responses\) \
+```shell
+python3 download_submissions.py --gdrive-path Courses/AI/2017/ass/Your\ submission\ package\ \(File\ responses\) \
         --submissions-dir submissions-zip/
 ```
        
 - Same but using the Google Folder ID (easier, less error-prone):
 
-```
+```shell
 python3 download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVlGUW01N2JONHpDT2JSUmtpNzA0bFdBWmhFbVU \
     --submissions-dir submissions-zip/
 ```
@@ -70,11 +69,14 @@ python3 download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVl
 
 The first time, the browser will open to authorize the execution of the script. Make sure you log into the RMIT account. After that, a `credentials.txt` file will be saved that will be used next time for authentication.
 
-## Building dirs from zip files
+
+## Useful scripts / commands
+
+### Building dirs from zip files
     
 Once all .zip files have been downloaded, we can generate one directory per student and unpack the zip into it follows:
 
-```
+```shell
 python3 expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
 ```
 
@@ -82,20 +84,58 @@ Unfortunately, Python unzip fails with some cases that have the wrong magic numb
 
 So, to get around both issues, I prefer to use the following shell command:
 
-    for i in s*.zip; do unzip -j -o "$i" -d `sed "s/_.*//" <<< $i` ; done
-    
+```shell
+for i in s*.zip; do unzip -j -o "$i" -d `sed "s/_.*//" <<< $i` ; done
+```
+
 This will create on directory per student and unpack all without re-creating the zip structure. So, if a student included the files in folders, they will be flatten out.
 
 If you want to move all resulting directories somewhere else:
 
-    find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
+```shell
+find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
+```
 
-
-
-## Errors in unzipping submissions
+### Errors in unzipping submissions
 
 For some submissions, you may see errors as follows:
 
+```
 Wed, 21 Aug 2019 20:24:18 ERROR    Cannot expand file s3627828_2019-08-18T20:35:03.949000+10:00.zip: <class 'zipfile.BadZipFile'> (Bad magic number for file header)
+```
+
+
+### Keeping submissions in a list of student numbers
+
+Suppose you get all submissions but you don't want to process them all, for example because some correspond to students who have dropped the course.
+
+First, generate a text file, say `list-enrolled.txt` with all the student numbers that are still enrolled; for example:
+
+```
+$ cat list-enrolled.txt
+6842580
+8781445
+9750989
+1682429
+2792522
+...
+```
+
+Next, if all submissions are in `sub/`, move all submissions to a folder called `submissions-enrolled/` as follows:
+
+```shell
+cat list.txt | while read STUDENT; do find sub/  -type f \
+    -name "s${STUDENT}*" -exec mv {} submissions-enrolled/ \; ;done
+```
+
+Remember that a submission has this form:
+
+```
+s1234572_2020-04-29T11:57:28.682000+10:00.pdf
+```
+
+
+
+
 
 
