@@ -123,8 +123,6 @@ def download_all_submissions(dir_destination, gdrive_id, overwrite, report_skip,
         # check for existing older submission files from the same student and remove them if any
         # submission time is included in the file name
         for existing_file in glob.glob(os.path.join(dir_destination, '%s_*.%s' % (student_id, sub_ext))):
-            print(existing_file)
-            exit(0)
             match = re.match(filename_pattern, existing_file)
             if match:
                 try:
@@ -171,13 +169,13 @@ if __name__ == '__main__':
     parser.add_argument(
         '--gdrive-id',
         type=str,
-        required=False,
+        default=None,
         help='The folder in Google Drive where all submissions are located.'
     )
     parser.add_argument(
         '--gdrive-path',
         type=str,
-        required=False,
+        default=None,
         help='The full path of the directory containing all the zip files in Google Drive.'
     )
     parser.add_argument(
@@ -223,7 +221,7 @@ if __name__ == '__main__':
     args = vars(parser.parse_args())
     print(args)
 
-    if args['gdrive_id'] is None and args.gdrive_path is None:
+    if args['gdrive_id'] is None and args['gdrive_path'] is None:
         logging.error("at least one of --gdrive-id --gdrive-path required")
         sys, exit(1)
 
