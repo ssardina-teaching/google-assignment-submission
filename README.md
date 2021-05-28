@@ -92,6 +92,25 @@ If you want to move all resulting directories somewhere else:
 find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
 ```
 
+## Move files to student number folders
+
+
+Sometimes the files downloaded are NOT zip files. Suppose they are meant to be `.cnf` files.
+
+First rename the files to the correct extension:
+
+```shell
+$ rename 's/\.zip/\.cnf/' *.zip
+```
+
+Next, many marking systems will require each student in its own folder with the student number. The student number is in the download file in the first 9 letters, so this will do it:
+
+```shell
+$ for f in *.cnf ; do mkdir ${f:0:8}; mv $f ${f:0:8}  ; done
+```
+
+After that, each student submission will be placed in a folder `sXXXXXXX/`.
+
 ## Other info
 
 ### Errors in unzipping submissions
