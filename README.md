@@ -16,28 +16,26 @@ There are 2 mains scripts:
 - `expand_zip_files.py`:
     expands zip files into directories per student
 
-
-The zip files or directories can then be used for automarking, plagarism detection (e.g., using MOSS), etc.
+The zip files or directories can then be used for automarking, plagiarism detection (e.g., using MOSS), etc.
 
 ### Requirements
 
 Works with Python 3. Install dependencies by executing:
 
-```
+```shell
 pip install -r requirements.txt
 ```
-
 
 ## Prepare Google Forms for submissions
 
 Basically, you need a way to store submissions in Google Drive. This can be done by either:
 
 - A Google From with upload capabilities.
-    - An RMIT template example can seen here: http://tinyurl.com/m2ply3l
-    - Send me an email if you want a copy of that form.
+  - An RMIT template example can seen here: http://tinyurl.com/m2ply3l
+  - Send me an email if you want a copy of that form.
 - Use the following Google Scripts system to enhance a form to upload files to Google Drive:
-    - https://www.labnol.org/internet/receive-files-in-google-drive/19697/
-    - https://www.labnol.org/internet/file-upload-google-forms/29170/
+  - https://www.labnol.org/internet/receive-files-in-google-drive/19697/
+  - https://www.labnol.org/internet/file-upload-google-forms/29170/
 
 Remember to set it to collect University email addresses IDs or Gmail address.  Otherwise, there is no way to confidently associate a submission with an id.
 
@@ -45,36 +43,34 @@ One field in the submission that I use handles HONOR CODE, taken from Khan Acade
 
 ```
 "I certify that this is all my own original work. If I took any parts from elsewhere, then they were non-essential parts of the project, and they are clearly attributed at the top of the file and in a separate report.  I will show I agree to this honor code by typing "Yes":
-This declaration is the same as the one in Khan Academy.  We trust you all to submit your own work only; please don't let us down. If you do, we will pursue the strongest consequences available to us. You are always better off getting a very bad mark (even zero) than 
-risking to go that path, as the consequences are serious for students. The project will not be marked unless this question is answered correctly and exactly with "Yes" as required. "
+This declaration is the same as the one in Khan Academy.  We trust you all to submit your own work only; please don't let us down. If you do, we will pursue the strongest consequences available to us. You are always better off getting a very bad mark (even zero) than risking to go that path, as the consequences are serious for students. The project will not be marked unless this question is answered correctly and exactly with "Yes" as required. "
 ```
 
-## Running the script
+## Bulk download of submissions
 
-- Download all latest submissions directory by using the path in Google Drive by specifying the folder from the user root folder:
-    
-```shell
-python3 download_submissions.py --gdrive-path Courses/AI/2017/ass/Your\ submission\ package\ \(File\ responses\) \
-        --submissions-dir submissions-zip/
-```
-       
-- Same but using the Google Folder ID (easier, less error-prone):
+The best way to get all the files from a Google Drive folder is to use the folder ID that can be obtained from the URL; for example:
 
 ```shell
 python3 download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVlGUW01N2JONHpDT2JSUmtpNzA0bFdBWmhFbVU \
     --submissions-dir submissions-zip/
 ```
-  
-- By default, skipped submissions that already exist are not reported, use `--report-skip` for that.
 
-The first time, the browser will open to authorize the execution of the script. Make sure you log into the RMIT account. After that, a `credentials.txt` file will be saved that will be used next time for authentication.
+The script will look for `credentials.txt` file to authenticate to GDrive. If there is none, it will open a browser session and ask you to authenticate. It will then store the credential in the file for further use. 
 
+If the authentication is failing, delete `credentials.txt` and re-authenticate again.
 
-## Useful scripts / commands
+It is possible to specify the whole folder dir instead of the folder id, but this is much more error-prone; for example:
 
-### Building dirs from zip files
-    
-Once all .zip files have been downloaded, we can generate one directory per student and unpack the zip into it follows:
+```shell
+python3 download_submissions.py --gdrive-path Courses/AI/2017/ass/Your\ submission\ package\ \(File\ responses\) \
+        --submissions-dir submissions-zip/
+```
+
+By default, skipped submissions that already exist are not reported, use `--report-skip` for that.
+
+## Expand ZIP into folders
+
+Once all `.zip` files have been downloaded, we can generate one directory per student and unpack the zip into it follows:
 
 ```shell
 python3 expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
@@ -96,11 +92,13 @@ If you want to move all resulting directories somewhere else:
 find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
 ```
 
+## Other info
+
 ### Errors in unzipping submissions
 
 For some submissions, you may see errors as follows:
 
-```
+```shell
 Wed, 21 Aug 2019 20:24:18 ERROR    Cannot expand file s3627828_2019-08-18T20:35:03.949000+10:00.zip: <class 'zipfile.BadZipFile'> (Bad magic number for file header)
 ```
 
@@ -133,9 +131,3 @@ Remember that a submission has this form:
 ```
 s1234572_2020-04-29T11:57:28.682000+10:00.pdf
 ```
-
-
-
-
-
-
