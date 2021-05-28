@@ -52,7 +52,7 @@ The best way to get all the files from a Google Drive folder is to use the folde
 
 ```shell
 python3 download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVlGUW01N2JONHpDT2JSUmtpNzA0bFdBWmhFbVU \
-    --submissions-dir submissions-zip/
+    --submissions-dir submissions-zip/ -submission-extension pdf
 ```
 
 The script will look for `credentials.txt` file to authenticate to GDrive. If there is none, it will open a browser session and ask you to authenticate. It will then store the credential in the file for further use. 

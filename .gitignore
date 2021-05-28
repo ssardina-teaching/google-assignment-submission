@@ -135,3 +135,5 @@ oldfiles
 /material/
 .idea
 client_secrets.json
+credentials.*
+sub-*
