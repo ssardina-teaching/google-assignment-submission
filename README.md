@@ -111,7 +111,7 @@ $ for f in *.cnf ; do mkdir ${f:0:8}; mv $f ${f:0:8}  ; done
 
 After that, each student submission will be placed in a folder `sXXXXXXX/`.
 
-## Other info
+## Other info & scripts
 
 ### Errors in unzipping submissions
 
@@ -120,7 +120,6 @@ For some submissions, you may see errors as follows:
 ```shell
 Wed, 21 Aug 2019 20:24:18 ERROR    Cannot expand file s3627828_2019-08-18T20:35:03.949000+10:00.zip: <class 'zipfile.BadZipFile'> (Bad magic number for file header)
 ```
-
 
 ### Keeping submissions in a list of student numbers
 
@@ -149,4 +148,12 @@ Remember that a submission has this form:
 
 ```
 s1234572_2020-04-29T11:57:28.682000+10:00.pdf
+```
+
+### Rename all files within student folders
+
+Suppose every student has a folder `sXXXXXX` and inside his/her file. To rename all to the same name, say, `sea-domain.cnf`:
+
+```shell
+$ rename 's/(.*)\/.*/$1\/sea-domain.cnf/' */*.cnf
 ```
