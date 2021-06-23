@@ -88,7 +88,7 @@ If the submission files are not the default `.zip` files, then we can use the `-
 $ python3 files2dirs.py --sub-dir submissions/ --output-dir student-dirs/ --ext cnf
 ```
 
-This will copy each `.cnf` file in `submissions/` into a student folder within `student-dirs/`.
+This will copy each `.cnf` file in `submissions/` into a student folder within `student-dirs/`. Use the `rename` tool to do more renaming of files as necessary.
 
 If you want to move all resulting directories somewhere else:
 
