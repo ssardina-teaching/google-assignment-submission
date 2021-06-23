@@ -11,12 +11,10 @@ When the submissions are in Google Drive, the script is able to retrieve their l
 
 There are 2 mains scripts:
 
-- `download_submissions.py`: 
-    download the latest submissions from Google Drive and set the student number and timestamp as file name
-- `expand_zip_files.py`:
-    expands zip files into directories per student
+- `download_submissions.py`: download the latest submissions from Google Drive and set the student number and timestamp as file name. Currently they are downloaded as `.zip` files.
+- `files2dir.py`: expand (for zip files) or copy (regular) files into directories per student.
 
-The zip files or directories can then be used for automarking, plagiarism detection (e.g., using MOSS), etc.
+The zip files or student folders can then be used for automarking, plagiarism detection (e.g., using MOSS), etc.
 
 ### Requirements
 
@@ -68,17 +66,15 @@ python3 download_submissions.py --gdrive-path Courses/AI/2017/ass/Your\ submissi
 
 By default, skipped submissions that already exist are not reported, use `--report-skip` for that.
 
-## Expand ZIP into folders
+## Expand files into folders
 
-Once all `.zip` files have been downloaded, we can generate one directory per student and unpack the zip into it follows:
+Once all files have been downloaded, we can generate one folder per student and either copy or  unpack (if a zip file) into the folder follows:
 
 ```shell
-python3 expand_zip_files.py --zip-dir submissions-zip/ --output-dir submissions-dir/
+$ python3 files2dirs.py --sub-dir submissions-zip/ --output-dir student-dirs/
 ```
 
-Unfortunately, Python unzip fails with some cases that have the wrong magic number, but they do work using unzip. Also, if the zip file has folders, they will be re-created and the automarker won't find the files.
-
-So, to get around both issues, I prefer to use the following shell command:
+**WARNING:** Unfortunately, Python unzip fails with some cases that have the wrong magic number, but they do work using unzip. Also, if the zip file has folders, they will be re-created and the automarker won't find the files. To get around both issues, I prefer to use the following shell command:
 
 ```shell
 for i in s*.zip; do unzip -j -o "$i" -d `sed "s/_.*//" <<< $i` ; done
@@ -86,16 +82,23 @@ for i in s*.zip; do unzip -j -o "$i" -d `sed "s/_.*//" <<< $i` ; done
 
 This will create on directory per student and unpack all without re-creating the zip structure. So, if a student included the files in folders, they will be flatten out.
 
+If the submission files are not the default `.zip` files, then we can use the `--ext` option to gather the right files:
+
+```shell
+$ python3 files2dirs.py --sub-dir submissions/ --output-dir student-dirs/ --ext cnf
+```
+
+This will copy each `.cnf` file in `submissions/` into a student folder within `student-dirs/`.
+
 If you want to move all resulting directories somewhere else:
 
 ```shell
 find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
 ```
 
-## Move files to student number folders
+## Move files to student number folders via scripting
 
-
-Sometimes the files downloaded are NOT zip files. Suppose they are meant to be `.cnf` files.
+We can create folders and move the files via shell scripting too. Suppose submissions are meant to be `.cnf` file (not `.zip` as produced by the download script).
 
 First rename the files to the correct extension:
 
