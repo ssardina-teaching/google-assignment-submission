@@ -24,15 +24,14 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
-        '--sub-dir',
+        'SUBDIR',
         type=str,
         default='./',
         help='Directory where zip files are located.'
     )
     parser.add_argument(
-        '--output-dir',
+        'OUTPUTDIR',
         type=str,
-        required=False,
         default='./',
         help='Directory where student directories will be placed.'
     )
@@ -50,15 +49,16 @@ if __name__ == '__main__':
         help='Overwrite destination if exists.'
     )
     args = parser.parse_args()
+    print(args)
 
-    if not os.path.exists(args.sub_dir) or not os.path.isdir(args.sub_dir):
+    if not os.path.exists(args.SUBDIR) or not os.path.isdir(args.SUBDIR):
         logging.error(
-            'Submissions zip directory not found or not a directory: %s.' % args.sub_dir)
+            f'Submissions directory not found or correct: {args.SUBDIR}')
         sys.exit(1)
 
-    if not os.path.exists(args.output_dir) or not os.path.isdir(args.output_dir):
+    if not os.path.exists(args.OUTPUTDIR) or not os.path.isdir(args.OUTPUTDIR):
         logging.error(
-            'Submission output directory not found or not a directory: %s.' % args.output_dir)
+            f'Submission output directory not found or correct: {args.OUTPUTDIR}.')
         sys.exit(1)
 
     # e.g., s3900792_2021-06-16T20:39:25.689000+10:00.zip
@@ -66,14 +66,14 @@ if __name__ == '__main__':
     sub_filename_pattern = re.compile(rf'(.+)_(.+).{args.ext}')
 
     # get all file names in submission folder
-    file_names = next(os.walk(args.sub_dir))[2]
+    file_names = next(os.walk(args.SUBDIR))[2]
     for file_name in file_names:
         try:
             match = re.match(sub_filename_pattern, file_name)
             # keep the prefix "s3900792" from filename
             student_dir = match.group(1)
-            path_file = os.path.join(args.sub_dir, file_name)
-            path_dest_student_dir = os.path.join(args.output_dir, student_dir)
+            path_file = os.path.join(args.SUBDIR, file_name)
+            path_dest_student_dir = os.path.join(args.OUTPUTDIR, student_dir)
             if not os.path.exists(path_dest_student_dir) or args.overwrite:
                 if not os.path.exists(path_dest_student_dir):
                     os.mkdir(path_dest_student_dir)
