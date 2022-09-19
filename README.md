@@ -1,13 +1,8 @@
 # Google Form/Drive Assignment Submission System #
 
-First developed by A/Prof. Sebastian Sardina and Marco Tamassia for RMIT University COSC1125/1127 Artificial Intelligence 2017.
+This Python tools allows to download and manipulates files in Google Drive. Those files may have been submitted by students via Google Forms.
 
-Contact: ssardina@gmail.com
-
-## Description
-
-This Python system handles assignment submissions stored in Google Drive, for example via Google Forms. 
-When the submissions are in Google Drive, the script is able to retrieve their latest version per student automatically.
+It was first developed by A/Prof. Sebastian Sardina and Marco Tamassia for RMIT University COSC1125/1127 Artificial Intelligence 2017, and subsequently extended/improved to cater for my courses.
 
 There are 2 mains scripts:
 
@@ -16,13 +11,15 @@ There are 2 mains scripts:
 
 The zip files or student folders can then be used for automarking, plagiarism detection (e.g., using MOSS), etc.
 
-### Requirements
+## Requirements & Setup
 
-Works with Python 3. Install dependencies by executing:
+Works with Python 3.6+. First, install dependencies by executing:
 
 ```shell
-pip install -r requirements.txt
+$ pip install -r requirements.txt
 ```
+
+The script relies on [PyDrive](https://pythonhosted.org/PyDrive/), which access Google services via an API. To access the API you need to authenticate and ultimately have a proper `credentials.txt` file from where you execute the script. But first you need to generate a `client_secret.json` file. Please follow the [PyDrive Authentication instructions](https://pythonhosted.org/PyDrive/quickstart.html#authentication).
 
 ## Prepare Google Forms for submissions
 
@@ -49,18 +46,16 @@ This declaration is the same as the one in Khan Academy.  We trust you all to su
 The best way to get all the files from a Google Drive folder is to use the folder ID that can be obtained from the URL; for example:
 
 ```shell
-python3 download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVlGUW01N2JONHpDT2JSUmtpNzA0bFdBWmhFbVU \
+$ python download_submissions.py --gdrive-id 0B7Whncx6ucnBfjZmOXZOZTJ5M0NLZjVzeVlGUW01N2JONHpDT2JSUmtpNzA0bFdBWmhFbVU \
     --submissions-dir submissions-zip/ -submission-extension pdf
 ```
 
-The script will look for `credentials.txt` file to authenticate to GDrive. If there is none, it will open a browser session and ask you to authenticate. It will then store the credential in the file for further use. 
-
-If the authentication is failing, delete `credentials.txt` and re-authenticate again.
+**Note:** The script will look for `credentials.txt` file to authenticate to GDrive. If there is none, but a `client_secrets.json` is available (see above), it will open a browser session and ask you to authenticate. It will then store the credential in the file for further use. If the authentication is failing, delete `credentials.txt` and re-authenticate again.
 
 It is possible to specify the whole folder dir instead of the folder id, but this is much more error-prone; for example:
 
 ```shell
-python3 download_submissions.py --gdrive-path Courses/AI/2017/ass/Your\ submission\ package\ \(File\ responses\) \
+$ python download_submissions.py --gdrive-path Courses/AI/2017/ass/Your\ submission\ package\ \(File\ responses\) \
         --submissions-dir submissions-zip/
 ```
 
@@ -71,13 +66,13 @@ By default, skipped submissions that already exist are not reported, use `--repo
 Once all files have been downloaded, we can generate one folder per student and either copy or  unpack (if a zip file) into the folder follows:
 
 ```shell
-$ python3 files2dirs.py --sub-dir submissions-zip/ --output-dir student-dirs/
+$ python files2dirs.py --sub-dir submissions-zip/ --output-dir student-dirs/
 ```
 
 **WARNING:** Unfortunately, Python unzip fails with some cases that have the wrong magic number, but they do work using unzip. Also, if the zip file has folders, they will be re-created and the automarker won't find the files. To get around both issues, I prefer to use the following shell command:
 
 ```shell
-for i in s*.zip; do unzip -j -o "$i" -d `sed "s/_.*//" <<< $i` ; done
+$ for i in s*.zip; do unzip -j -o "$i" -d `sed "s/_.*//" <<< $i` ; done
 ```
 
 This will create on directory per student and unpack all without re-creating the zip structure. So, if a student included the files in folders, they will be flatten out.
@@ -85,7 +80,7 @@ This will create on directory per student and unpack all without re-creating the
 If the submission files are not the default `.zip` files, then we can use the `--ext` option to gather the right files:
 
 ```shell
-$ python3 files2dirs.py --sub-dir submissions/ --output-dir student-dirs/ --ext cnf
+$ python files2dirs.py --sub-dir submissions/ --output-dir student-dirs/ --ext cnf
 ```
 
 This will copy each `.cnf` file in `submissions/` into a student folder within `student-dirs/`. Use the `rename` tool to do more renaming of files as necessary.
@@ -93,7 +88,7 @@ This will copy each `.cnf` file in `submissions/` into a student folder within `
 If you want to move all resulting directories somewhere else:
 
 ```shell
-find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
+$ find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
 ```
 
 ## Move files to student number folders via scripting
