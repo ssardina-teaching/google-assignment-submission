@@ -66,7 +66,7 @@ By default, skipped submissions that already exist are not reported, use `--repo
 Once all files have been downloaded, we can generate one folder per student and either copy or  unpack (if a zip file) into the folder follows:
 
 ```shell
-$ python files2dirs.py --sub-dir submissions-zip/ --output-dir student-dirs/
+$ python files2dirs.py submissions-zip/ student-dirs/
 ```
 
 **WARNING:** Unfortunately, Python unzip fails with some cases that have the wrong magic number, but they do work using unzip. Also, if the zip file has folders, they will be re-created and the automarker won't find the files. To get around both issues, I prefer to use the following shell command:
@@ -80,7 +80,7 @@ This will create on directory per student and unpack all without re-creating the
 If the submission files are not the default `.zip` files, then we can use the `--ext` option to gather the right files:
 
 ```shell
-$ python files2dirs.py --sub-dir submissions/ --output-dir student-dirs/ --ext cnf
+$ python files2dirs.py --ext cnf submissions/ student-dirs/
 ```
 
 This will copy each `.cnf` file in `submissions/` into a student folder within `student-dirs/`. Use the `rename` tool to do more renaming of files as necessary.
