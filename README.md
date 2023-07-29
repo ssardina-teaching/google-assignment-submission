@@ -1,4 +1,4 @@
-# Google Form/Drive Assignment Submission System #
+# Google Form/Drive Assignment Submission System
 
 This Python tools allows to download and manipulates files in Google Drive. Those files may have been submitted by students via Google Forms.
 
@@ -11,37 +11,56 @@ There are 2 mains scripts:
 
 The zip files or student folders can then be used for automarking, plagiarism detection (e.g., using MOSS), etc.
 
-## Requirements & Setup
+- [Google Form/Drive Assignment Submission System](#google-formdrive-assignment-submission-system)
+  - [Requirements \& Authentication](#requirements--authentication)
+    - [Google API Python Client](#google-api-python-client)
+  - [Bulk drive download via PyDrive](#bulk-drive-download-via-pydrive)
+  - [Fill Google Forms with marking](#fill-google-forms-with-marking)
+  - [Other useful tools](#other-useful-tools)
+    - [Expand files into folders](#expand-files-into-folders)
+    - [Move files to student number folders via scripting](#move-files-to-student-number-folders-via-scripting)
+    - [Errors in unzipping submissions](#errors-in-unzipping-submissions)
+    - [Keeping submissions in a list of student numbers](#keeping-submissions-in-a-list-of-student-numbers)
+    - [Rename all files within student folders](#rename-all-files-within-student-folders)
 
-Works with Python 3.6+. First, install dependencies by executing:
+## Requirements & Authentication
+
+The system uses [PyDrive](https://pythonhosted.org/PyDrive/), a wrapper on top of [google-api-python-client](https://github.com/googleapis/google-api-python-client/) to simplify access to the Google Drive (via the API).
+
+**Note**: as of 2021, PyDrive is archived and replaced with [PyDrive2](https://github.com/iterative/PyDrive2). The `download_submissions.py` script here is still in PyDrive as of July, 2023 and needs to be migrated.
 
 ```shell
-$ pip install -r requirements.txt
+$ pip install pydrive pytz iso8601 pandas
 ```
+
+Or just install al via:  `pip install -r requirements.txt`
+
+### Google API Python Client
+
+The [google-api-python-client](https://github.com/googleapis/google-api-python-client/) is the main client which has access to all the API provided. 
+  - Note: they recommend moving towards the [Google Cloud Python Client](https://github.com/googleapis/google-cloud-python).
+
+In July 2023, I tried to use this for editing and marking quizzes in Google Form, but the client is still too low-level and doesn't provide classes for Google Drive or Google Forms for example. I couldn't find a Google Form wrapper as there is for the drive.
+
+To install these packages:
+
+``` shell
+$ pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+$ pip instal oauth2client
+```
+
+All access to Google API requires authentication; usually the workflow is as follows:
+
+1. Go to the [Google API Access Panel](https://console.developers.google.com/apis/credentials).
+2. Create a project.
+3. Create an OAuth consent screen.
+4. Create credentials of type "OAuth Client ID".
+5. Download the JSON file of such credentials and name it `client_secrets.json`
+6. Place the file in the same directory as the scripts.
+
+## Bulk drive download via PyDrive
 
 The script relies on [PyDrive](https://pythonhosted.org/PyDrive/), which access Google services via an API. To access the API you need to authenticate and ultimately have a proper `credentials.txt` file from where you execute the script. But first you need to generate a `client_secret.json` file. Please follow the [PyDrive Authentication instructions](https://pythonhosted.org/PyDrive/quickstart.html#authentication).
-
-## Prepare Google Forms for submissions
-
-Basically, you need a way to store submissions in Google Drive. This can be done by either:
-
-- A Google From with upload capabilities.
-  - An RMIT template example can seen here: http://tinyurl.com/m2ply3l
-  - Send me an email if you want a copy of that form.
-- Use the following Google Scripts system to enhance a form to upload files to Google Drive:
-  - https://www.labnol.org/internet/receive-files-in-google-drive/19697/
-  - https://www.labnol.org/internet/file-upload-google-forms/29170/
-
-Remember to set it to collect University email addresses IDs or Gmail address.  Otherwise, there is no way to confidently associate a submission with an id.
-
-One field in the submission that I use handles HONOR CODE, taken from Khan Academy:
-
-```
-"I certify that this is all my own original work. If I took any parts from elsewhere, then they were non-essential parts of the project, and they are clearly attributed at the top of the file and in a separate report.  I will show I agree to this honor code by typing "Yes":
-This declaration is the same as the one in Khan Academy.  We trust you all to submit your own work only; please don't let us down. If you do, we will pursue the strongest consequences available to us. You are always better off getting a very bad mark (even zero) than risking to go that path, as the consequences are serious for students. The project will not be marked unless this question is answered correctly and exactly with "Yes" as required. "
-```
-
-## Bulk download of submissions
 
 The best way to get all the files from a Google Drive folder is to use the folder ID that can be obtained from the URL; for example:
 
@@ -61,7 +80,18 @@ $ python download_submissions.py --gdrive-path Courses/AI/2017/ass/Your\ submiss
 
 By default, skipped submissions that already exist are not reported, use `--report-skip` for that.
 
-## Expand files into folders
+## Fill Google Forms with marking
+
+We want to fill forms using the Google API. A possibility would be to use a Bot using Salenium, like [this one](https://github.com/skyrunner360/ADYPU_Feedback_form_filling_Bot).
+
+We tried to get a system using the [Google Forms API](https://developers.google.com/forms/api/guides)  via the Python client, but it is way too low-level. I couldn't find any high-level interface for Google Forms as `PyDrive` is for the Google Drive.
+
+At this point the best solution is to keep [editing forms via the App Script inside the Google Sheet](https://developers.google.com/apps-script/reference/forms/quiz-feedback-builder).
+
+
+------------------------
+## Other useful tools
+### Expand files into folders
 
 Once all files have been downloaded, we can generate one folder per student and either copy or  unpack (if a zip file) into the folder follows:
 
@@ -91,7 +121,7 @@ If you want to move all resulting directories somewhere else:
 $ find . -maxdepth 1 -type d -exec mv {} ../sub-01/ \;
 ```
 
-## Move files to student number folders via scripting
+### Move files to student number folders via scripting
 
 We can create folders and move the files via shell scripting too. Suppose submissions are meant to be `.cnf` file (not `.zip` as produced by the download script).
 
@@ -108,8 +138,6 @@ $ for f in *.cnf ; do mkdir ${f:0:8}; mv $f ${f:0:8}  ; done
 ```
 
 After that, each student submission will be placed in a folder `sXXXXXXX/`.
-
-## Other info & scripts
 
 ### Errors in unzipping submissions
 
