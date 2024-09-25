@@ -1,5 +1,7 @@
 # Google Form/Drive Assignment Submission System
 
+## REPO HAS BEEN ARCHIVED AND SCRIPTS MOVED TO THIS REPO: https://github.com/ssardina-teaching/git-hw-submissions
+
 This Python tools allows to download and manipulates files in Google Drive. Those files may have been submitted by students via Google Forms.
 
 It was first developed by A/Prof. Sebastian Sardina and Marco Tamassia for RMIT University COSC1125/1127 Artificial Intelligence 2017, and subsequently extended/improved to cater for my courses.
